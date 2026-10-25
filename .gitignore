@@ -1,0 +1,7 @@
+.venv/
+.deps/
+bin/
+obj/
+__pycache__/
+*.py[cod]
+*.log
