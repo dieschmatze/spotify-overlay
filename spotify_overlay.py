@@ -29,7 +29,7 @@ class SpotifyOverlay:
         self.root.attributes("-topmost", True)
         self.root.attributes("-alpha", 0.92)
         self.root.configure(bg="#171820")
-        self.root.geometry("420x154")
+        self.root.geometry("540x226")
         self.root.resizable(False, False)
 
         self.card = tk.Frame(self.root, bg="#171820", highlightthickness=1,
@@ -37,9 +37,12 @@ class SpotifyOverlay:
         self.card.pack(fill="both", expand=True, padx=3, pady=3)
         self.card.columnconfigure(1, weight=1)
 
-        self.cover = tk.Label(self.card, text="♫", font=("Segoe UI", 24, "bold"),
-                              fg="white", bg="#1DB954", width=4, height=2)
-        self.cover.grid(row=0, column=0, rowspan=3, padx=(12, 10), pady=9)
+        self.cover_frame = tk.Frame(self.card, width=140, height=140, bg="#1DB954")
+        self.cover_frame.grid(row=0, column=0, rowspan=3, padx=(12, 10), pady=9)
+        self.cover_frame.grid_propagate(False)
+        self.cover = tk.Label(self.cover_frame, text="♫", font=("Segoe UI", 48, "bold"),
+                              fg="white", bg="#1DB954")
+        self.cover.pack(fill="both", expand=True)
 
         self.header = tk.Label(self.card, text="JETZT BEI SPOTIFY", font=("Segoe UI", 9, "bold"),
                                fg="#1DB954", bg="#171820", anchor="w")
@@ -86,14 +89,15 @@ class SpotifyOverlay:
         self._position_time = time.monotonic()
         self._playing = False
 
-        for widget in (self.card, self.cover, self.header, self.spotify_logo, self.title, self.artist):
+        for widget in (self.card, self.cover_frame, self.cover, self.header,
+                       self.spotify_logo, self.title, self.artist):
             widget.bind("<ButtonPress-1>", self._drag_start)
             widget.bind("<B1-Motion>", self._drag)
 
         self.root.update_idletasks()
         self._hwnd = int(self.root.wm_frame(), 0)
         screen_width = self.root.winfo_screenwidth()
-        self.root.geometry(f"420x154+{screen_width - 438}+18")
+        self.root.geometry(f"540x226+{screen_width - 558}+18")
         self._keep_on_top()
         self._refresh()
         self._tick_progress()
@@ -229,7 +233,7 @@ class SpotifyOverlay:
         if cover_data:
             try:
                 image = Image.open(BytesIO(cover_data)).convert("RGB")
-                image = ImageOps.fit(image, (64, 64), method=Image.Resampling.LANCZOS)
+                image = ImageOps.fit(image, (128, 128), method=Image.Resampling.LANCZOS)
                 self._cover_photo = ImageTk.PhotoImage(image)
                 self.cover.configure(image=self._cover_photo, text="", bg="#171820")
                 return
